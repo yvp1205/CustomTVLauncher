@@ -1,0 +1,39 @@
+name: Build Android TV Launcher APK
+
+# This triggers the action automatically whenever you push code changes to the 'main' branch
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Download your repository code onto the cloud server
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Java Development Kit (JDK 17 is standard for modern Android projects)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Grant execution permissions to the Gradle wrapper script
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. Run the Gradle command to compile the Debug APK
+      - name: Build Debug APK with Gradle
+        run: ./gradlew assembleDebug
+
+      # 5. Save the resulting APK so you can download it from the GitHub website
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
